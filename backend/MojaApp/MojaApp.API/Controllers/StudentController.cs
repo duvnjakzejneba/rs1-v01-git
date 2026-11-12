@@ -9,7 +9,7 @@ namespace MojaApp.API.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("{Id}")]
         public Student GetById(int id)
         {
             Student? s = StudentStorage.Students.Where(x=>x.Id == id).FirstOrDefault();
@@ -19,6 +19,7 @@ namespace MojaApp.API.Controllers
             
             return s;
         }
+
         [HttpPost]
         public Student Dodaj(string ime, string prezime)
         {
@@ -34,7 +35,8 @@ namespace MojaApp.API.Controllers
             StudentStorage.Students.Add(s);
             return s;
         }
-        [HttpDelete]
+
+[HttpDelete]
         public int Obrisi(int studentId)
         {
             var s = StudentStorage.Students.FirstOrDefault(x=>x.Id == studentId);
@@ -43,6 +45,11 @@ namespace MojaApp.API.Controllers
             
             StudentStorage.Students.Remove(s);
             return 1;
+        }
+        [HttpGet("(GetAll)")]
+        public List<Student> GetAll()
+        {
+            return StudentStorage.Students;
         }
     }
 }
