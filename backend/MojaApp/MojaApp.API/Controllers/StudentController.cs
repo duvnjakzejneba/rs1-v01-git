@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MojaApp.API.Controllers.Data;
+using MojaApp.API.Controllers.Dtos;
 using MojaApp.API.Controllers.Models;
 
 namespace MojaApp.API.Controllers
@@ -9,10 +10,33 @@ namespace MojaApp.API.Controllers
     [ApiController]
     public class StudentController : ControllerBase
     {
-        [HttpGet("{Id}")]
-        public Student GetById(int id)
+        
+        [HttpGet]
+        public List<StudentGetAllResponse> GetAll()
         {
-            Student? s = StudentStorage.Students.Where(x=>x.Id == id).FirstOrDefault();
+            return StudentStorage.Students.Select(x=> new StudentGetAllResponse
+                (
+                    x.Id,
+                    x.Ime,
+                    x.Prezime,
+                    x.OpstinaRodjenja == null? null: new StudentGetAllResponseOpstina(x.OpstinaRodjenja.Description, "72270")
+                )
+            ).ToList();
+        }
+        
+        [HttpGet("{id}")]
+        public StudentGetByIdResponse GetById(int id)
+        {
+            var s = StudentStorage.Students.Where(x=>x.Id == id).
+                Select(x => new StudentGetByIdResponse
+                    (
+                        x.Id,
+                        x.Ime,
+                        x.Prezime,
+                        x.SlikaStudenta,
+                        x.OpstinaRodjenja == null? null: new StudentGetByIdResponseOpstina(x.OpstinaRodjenja.Description, "72270")
+                    )
+                ).FirstOrDefault();
             
             if (s == null)
                 throw new Exception("nema studenta");
@@ -21,36 +45,32 @@ namespace MojaApp.API.Controllers
         }
 
         [HttpPost]
-        public Student Dodaj(string ime, string prezime)
+        public int Dodaj([FromBody]StudentDodajRequest request)
         {
             
             var maxID = StudentStorage.Students.Max(x => x.Id);
             var s = new Student
             {
                 Id = maxID + 1,
-                Ime = ime,
-                Prezime = prezime
+                Ime = request.Ime,
+                Prezime = request.Prezime,
+                OpstinaRodjenjaId = request.OpstinaRodjenjaId,
+                DatumRodjenja = request.DatumRodjenja
             };
                 
             StudentStorage.Students.Add(s);
-            return s;
+            return s.Id;
         }
 
         [HttpDelete]
-        public int Obrisi(int studentId)
+        public IActionResult Obrisi(int studentId)
         {
             var s = StudentStorage.Students.FirstOrDefault(x=>x.Id == studentId);
             if (s == null)
-                return 0; 
+                return BadRequest(); 
             
             StudentStorage.Students.Remove(s);
-            return 1;
-        }
-
-        [HttpGet("(GetAll)")]
-        public List<Student> GetAll()
-        {
-            return StudentStorage.Students;
+            return Ok();
         }
     }
 }
