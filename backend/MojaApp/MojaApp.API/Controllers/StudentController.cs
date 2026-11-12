@@ -36,6 +36,16 @@ namespace MojaApp.API.Controllers
             return s;
         }
 
+[HttpDelete]
+        public int Obrisi(int studentId)
+        {
+            var s = StudentStorage.Students.FirstOrDefault(x=>x.Id == studentId);
+            if (s == null)
+                return 0; 
+            
+            StudentStorage.Students.Remove(s);
+            return 1;
+        }
         [HttpGet("(GetAll)")]
         public List<Student> GetAll()
         {
