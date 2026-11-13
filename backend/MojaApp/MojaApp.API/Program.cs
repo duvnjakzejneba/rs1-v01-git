@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using MojaApp.API.Controllers.Data;
 using MojaApp.API.Controllers.Models;
 
@@ -9,6 +10,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//builder.Services.AddSingleton<StudentStorage>();
+builder.Services.AddDbContext<AppDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Main"))
+);
 
 var app = builder.Build();
 
@@ -25,7 +30,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-StudentStorage.Students.Add(new Student(){Id = 1, Ime = "Amer", Prezime = "Beso"});
-StudentStorage.Students.Add(new Student(){Id = 2, Ime = "Zejneba", Prezime = "Duvnjak-Beso"});
+StudentStorage._students.Add(new Student(){Id = 1, Ime = "Amer", Prezime = "Beso"});
+StudentStorage._students.Add(new Student(){Id = 2, Ime = "Zejneba", Prezime = "Duvnjak-Beso"});
 
 app.Run();
