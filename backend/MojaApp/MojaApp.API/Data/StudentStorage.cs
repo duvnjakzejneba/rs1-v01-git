@@ -4,5 +4,11 @@ namespace MojaApp.API.Controllers.Data;
 
 public class StudentStorage
 {
-    public static List<Models.Student> Students = new List<Student>(); 
+    public static List<Models.Student> _students = new List<Student>(); 
+    
+    public static List<Student> GetAll()
+    {
+        return _students;
+    }
 }
+

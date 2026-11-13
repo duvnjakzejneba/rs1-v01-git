@@ -9,7 +9,7 @@ public class Student
 
     public int? OpstinaRodjenjaId { get; set; }
     public Opstina OpstinaRodjenja { get; set; }
-    public DateTime? DatumRodjenja { get; set; }
-    public DateTime CreatedTime { get; set; }
-    public string SlikaStudenta { get; set; }
+    public DateOnly? DatumRodjenja { get; set; }
+    public DateTime DatumKreiranja { get; set; }
+    public string? SlikaStudenta { get; set; }
 }
