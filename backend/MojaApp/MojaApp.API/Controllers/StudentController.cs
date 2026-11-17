@@ -30,32 +30,33 @@ namespace MojaApp.API.Controllers
             return students.Select(Mapiraj).ToList();
         }
         
-        [HttpGet("{id}")]
-        public StudentResponse GetById(int id)
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<StudentResponse>>? GetById(int id, CancellationToken ct)
         {
-            var s = StudentStorage._students.Where(x=>x.Id == id).Select(Mapiraj).FirstOrDefault();
-            
-            if (s == null)
-                throw new Exception("nema studenta");
-            
-            return s;
+            Student? student = await db.Studenti.FirstOrDefaultAsync(c => c.Id == id, ct);
+
+            if (student == null)
+                return NotFound();
+
+            return Ok(Mapiraj(student)); 
         }
 
         [HttpPost]
-        public int Dodaj([FromBody]StudentDodajRequest request)
+        public async Task<ActionResult<StudentResponse>> Dodaj(StudentDodajRequest request, CancellationToken ct)
         {
             
-            var maxID = StudentStorage._students.Max(x => x.Id);
-            var s = new Student
+            Student student = new Student
             {
-                Id = maxID + 1,
                 Ime = request.Ime,
                 Prezime = request.Prezime,
-                DatumRodjenja = request.DatumRodjenja
+                DatumRodjenja = request.DatumRodjenja,
+                DatumKreiranja = DateTime.Now,
             };
+
+            db.Studenti.Add(student);
+            await db.SaveChangesAsync(ct);
                 
-            StudentStorage._students.Add(s);
-            return s.Id;
+            return Ok(Mapiraj(student));
         }
 
         [HttpDelete]
